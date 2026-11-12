@@ -66,7 +66,7 @@ android {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
-        resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/*.version")
+        resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/*.version", "DebugProbesKt.bin")
     }
     lint {
         abortOnError = false

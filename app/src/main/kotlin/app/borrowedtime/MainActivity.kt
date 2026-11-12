@@ -202,6 +202,7 @@ private fun AppHost(resumeTick: Int) {
 
 @Composable
 private fun DemoHost(which: String) {
+    if (which == "settings") remember { Store.limitMin = 45; Store.apps = setOf("a", "b"); 0 }
     val none: () -> Unit = {}
     val noIcon: suspend (String) -> ImageBitmap? = { null }
     when (which) {

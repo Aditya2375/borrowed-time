@@ -167,7 +167,7 @@ fun PickScreen(
         Box(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, C.Ink, C.Ink)))
-                .navigationBarsPadding().padding(start = 24.dp, end = 24.dp, top = 36.dp, bottom = 16.dp),
+                .navigationBarsPadding().padding(start = 24.dp, end = 24.dp, top = 64.dp, bottom = 16.dp),
         ) {
             BtButton(
                 if (selected.isEmpty()) "Pick at least one app" else if (first) "Start guarding" else "Save",

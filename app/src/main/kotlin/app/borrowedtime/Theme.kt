@@ -20,7 +20,7 @@ object C {
     val Line = Color(0xFF2B2824)
     val Paper = Color(0xFFF2ECDF)
     val Muted = Color(0xFF8E877B)
-    val Faint = Color(0xFF5E5850)
+    val Faint = Color(0xFF857E73)
     val Sand = Color(0xFFE6B655)
     val SandDim = Color(0xFF3A2F18)
     val Moss = Color(0xFF8FB387)

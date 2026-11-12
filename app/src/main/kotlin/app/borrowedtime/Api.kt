@@ -96,6 +96,8 @@ object Api {
         "expired" -> "This ask ran out of time."
         "own_request" -> "You can't answer your own ask."
         "unauthorized" -> "This device was removed from the group."
+        "too_many" -> "Too many tries. Wait a few minutes and try again."
+        "recently_left" -> "That name left this group recently. Try again later."
         else -> "Something went wrong. Try again in a moment."
     }
 }

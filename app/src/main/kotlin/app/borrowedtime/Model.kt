@@ -15,6 +15,8 @@ data class Member(
     val tz: Int,
 ) {
     val allowanceSec: Int get() = (limitMin + grantedMin) * 60
+    /** No sign of life for 10 minutes means the guard is off, even if it never said so. */
+    fun silent(now: Long): Boolean = seen > 0 && now - seen > 600
     val leftSec: Int get() = (allowanceSec - usedSec).coerceAtLeast(0)
 }
 

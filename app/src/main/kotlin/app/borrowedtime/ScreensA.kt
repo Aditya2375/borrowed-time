@@ -51,8 +51,8 @@ import androidx.compose.ui.unit.sp
 fun WelcomeScreen(onCreate: () -> Unit, onJoin: () -> Unit) {
     Box(Modifier.fillMaxSize().background(C.Ink)) {
         Mark(
-            420.dp, C.Paper.copy(alpha = 0.035f), C.Sand.copy(alpha = 0.10f),
-            Modifier.align(Alignment.TopEnd).offset(x = 120.dp, y = 70.dp),
+            340.dp, C.Paper.copy(alpha = 0.025f), C.Sand.copy(alpha = 0.07f),
+            Modifier.align(Alignment.TopEnd).offset(x = 40.dp, y = 110.dp),
         )
         Column(Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 28.dp, vertical = 20.dp)) {
             Reveal(0) {
@@ -237,7 +237,7 @@ fun SetupScreen(
             Spacer(Modifier.height(20.dp))
             Reveal(3) {
                 Text(
-                    "Nothing on your screen, in your messages or in your photos is read. Only your daily total for the apps you pick is shared with your group.",
+                    "Nothing on your screen, in your messages or in your photos is read. Your group sees your name, your limit, how much you've used today, how many apps you limit, whether the guard is running, when your phone last checked in, and any note you write on an ask.",
                     style = T.Small.copy(color = C.Faint),
                 )
             }

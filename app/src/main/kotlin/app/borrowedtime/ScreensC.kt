@@ -55,16 +55,16 @@ private fun FriendRow(m: Member, now: Long) {
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(m.name, style = T.Strong, maxLines = 1)
-                if (!m.guardOk) {
+                if (!m.guardOk || m.silent(now)) {
                     Spacer(Modifier.width(8.dp))
-                    Text("Guard off", style = T.Label.copy(color = C.Ember))
+                    Text(if (m.guardOk) "Guard silent" else "Guard off", style = T.Label.copy(color = C.Ember))
                 }
             }
             Spacer(Modifier.height(7.dp))
             Meter(used, if (spent) C.Ember else C.Sand)
             Spacer(Modifier.height(6.dp))
             Text(
-                if (spent) "Out of time" else "${minutesLabel(m.leftSec / 60)} left" + if (!m.guardOk && m.seen > 0) " · seen ${ago(now, m.seen)}" else "",
+                if (spent) "Out of time" else "${minutesLabel(m.leftSec / 60)} left" + if ((!m.guardOk || m.silent(now)) && m.seen > 0) " · seen ${ago(now, m.seen)}" else "",
                 style = T.Small,
             )
         }

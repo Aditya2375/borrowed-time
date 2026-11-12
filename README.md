@@ -20,6 +20,13 @@ Download `borrowed-time.apk` from the [latest release](../../releases/latest) on
 - Some phone makers kill background apps aggressively. Turn off battery optimisation for Borrowed Time if the guard stops.
 - The pause screen is an overlay, not a system lock.
 
+## Honest limits
+
+- Leaving the group or uninstalling stops the guard on that phone. Friends see the member go quiet ("Guard silent" after ten minutes without a check-in). Asks per day are counted per name in the group, so leaving and rejoining under the same name does not reset them.
+- Days follow the phone's clock and timezone. Someone who changes the date or timezone can confuse the daily reset. This is a trust-based app: it works among friends, it is not tamper-proof.
+- Asks reach a friend on their next check-in (every 15 seconds with the screen on, every five minutes with it off). There is no push service, so a phone in deep sleep can be slower.
+- The group shares your name, limit, time used today, how many apps you limit, whether the guard is running, when your phone last checked in, and any note on an ask.
+
 ## How it works
 
 The app counts foreground time from Android's usage log, the same source Digital Wellbeing uses. A small foreground service watches which app is in front and shows the pause screen when the allowance is spent.
