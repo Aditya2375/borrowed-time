@@ -216,6 +216,8 @@ private fun DemoHost(which: String) {
         )
         "home" -> Box(Modifier.fillMaxSize()) { HomeScreen(Demo.ui(false, answer = true), none, none, none, { _, _ -> }, none) }
         "home_spent" -> Box(Modifier.fillMaxSize()) { HomeScreen(Demo.ui(true, asking = true), none, none, none, { _, _ -> }, none) }
+        "home_skew" -> Box(Modifier.fillMaxSize()) { HomeScreen(Demo.ui(false, skew = true), none, none, none, { _, _ -> }, none) }
+        "home_end" -> Box(Modifier.fillMaxSize()) { HomeScreen(Demo.ui(false, answer = true), none, none, none, { _, _ -> }, none, scrollToEnd = true) }
         "block" -> PauseScreen(Demo.ui(true), none, none)
         "block_ask" -> PauseScreen(Demo.ui(true), none, none, demo = true)
         "settings" -> SettingsScreen(Demo.ui(false), none, none, none, none, none, "1.0.0")

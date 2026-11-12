@@ -52,7 +52,7 @@ fun WelcomeScreen(onCreate: () -> Unit, onJoin: () -> Unit) {
     Box(Modifier.fillMaxSize().background(C.Ink)) {
         Mark(
             340.dp, C.Paper.copy(alpha = 0.025f), C.Sand.copy(alpha = 0.07f),
-            Modifier.align(Alignment.TopEnd).offset(x = 40.dp, y = 110.dp),
+            Modifier.align(Alignment.TopEnd).offset(x = 40.dp, y = 110.dp).fadeEdges(),
         )
         Column(Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 28.dp, vertical = 20.dp)) {
             Reveal(0) {

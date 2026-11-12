@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -282,3 +283,22 @@ fun Mark(size: Dp, body: Color = C.Paper, sand: Color = C.Sand, modifier: Modifi
         }
     }
 }
+
+/** Fades a watermark out toward its edges so nothing ends in a hard line. */
+fun Modifier.fadeEdges(): Modifier = this
+    .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+    .drawWithContent {
+        drawContent()
+        drawRect(
+            androidx.compose.ui.graphics.Brush.verticalGradient(
+                0f to Color.Black, 0.18f to Color.Transparent, 0.62f to Color.Transparent, 1f to Color.Black,
+            ),
+            blendMode = androidx.compose.ui.graphics.BlendMode.DstOut,
+        )
+        drawRect(
+            androidx.compose.ui.graphics.Brush.horizontalGradient(
+                0f to Color.Black, 0.2f to Color.Transparent, 0.8f to Color.Transparent, 1f to Color.Black,
+            ),
+            blendMode = androidx.compose.ui.graphics.BlendMode.DstOut,
+        )
+    }

@@ -111,7 +111,7 @@ object Repo {
     }
 
     fun adoptSession(sess: Api.Session, name: String) {
-        if (Store.tzPin == Store.NO_TZ) Store.tzPin = java.util.TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
+        if (Store.tzPin == Store.NO_TZ) Clock.pinNow()
         Store.memberId = sess.memberId
         Store.secret = sess.secret
         Store.name = name

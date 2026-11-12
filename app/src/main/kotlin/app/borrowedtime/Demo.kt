@@ -16,16 +16,16 @@ object Demo {
         }
         return Snapshot(
             now, "The Group Chat Jail", "K7M4QX", "me", "Aditya", if (asking) 2 else 1, 0,
-            listOf(me, mem("r", "Ravi", 60, 52), mem("s", "Sana", 30, 30, 10), mem("k", "Kabir", 45, 8, guard = false, seenAgo = 5400)),
+            listOf(me, mem("r", "Ravi", 60, 52), mem("s", "Sana", 30, 30, 10), mem("k", "Kabir", 45, 8, guard = false, seenAgo = 5400), mem("z", "Mira", 60, 20, guard = true, seenAgo = 1500)),
             asks, listOf("Dev" to now - 7200),
         )
     }
 
-    fun ui(spent: Boolean, asking: Boolean = false, answer: Boolean = false): UiState {
+    fun ui(spent: Boolean, asking: Boolean = false, answer: Boolean = false, skew: Boolean = false): UiState {
         val s = snapshot(spent, asking, answer)
         return UiState(
             snapshot = s, usedSec = s.me!!.usedSec, limitMin = 45, grantedMin = 0,
-            perms = Perms(true, true, true, false), health = Health.Ok,
+            perms = Perms(true, true, true, false), health = Health.Ok, skewMs = if (skew) 3_600_000L else 0L,
         )
     }
 

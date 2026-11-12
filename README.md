@@ -22,10 +22,15 @@ Download `borrowed-time.apk` from the [latest release](../../releases/latest) on
 
 ## Honest limits
 
-- Leaving the group or uninstalling stops the guard on that phone. Friends see the member go quiet ("Guard silent" after ten minutes without a check-in). Asks per day are counted per name in the group, so leaving and rejoining under the same name does not reset them.
-- Days follow the phone's clock and timezone. Someone who changes the date or timezone can confuse the daily reset. This is a trust-based app: it works among friends, it is not tamper-proof.
+This is a trust-based app for friends. It is not tamper-proof.
+
+- Leaving the group, uninstalling, or force-stopping stops the guard on that phone. Friends see "Left the group" for 48 hours, or "Guard silent" once a phone has not checked in for ten minutes. That is a social deterrent, not a lock.
+- Asks per day are counted per name inside the group, and a name that left cannot rejoin for 12 hours. Rejoining under a different name starts fresh, and one person with two phones can still pose as two members.
+- "Today" follows the group's clock, not the phone's: each check-in measures how far the phone is off and corrects for it. A phone that stays offline can still get away with a date change until its next check-in. The timezone is fixed when you join and only follows the phone after the phone has kept a new one for a full day. A phone installed before this version has no fixed zone and follows the phone.
 - Asks reach a friend on their next check-in (every 15 seconds with the screen on, every five minutes with it off). There is no push service, so a phone in deep sleep can be slower.
+- Time spent in split-screen or floating windows can be undercounted, because only the app that came forward last counts.
 - The group shares your name, limit, time used today, how many apps you limit, whether the guard is running, when your phone last checked in, and any note on an ask.
+- The pause screen is an overlay, not a system lock. Behaviour on the newest Android versions has only been checked on an emulator.
 
 ## How it works
 

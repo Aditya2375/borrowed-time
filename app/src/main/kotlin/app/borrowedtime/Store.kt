@@ -4,32 +4,48 @@ import android.content.Context
 import android.content.SharedPreferences
 import java.util.TimeZone
 
+interface PinStore {
+    var tzPin: Int
+    override var tzCand: Int
+    override var tzCandSince: Long
+}
+
 object Clock {
+    const val NO_TZ = Int.MIN_VALUE
+
     /** Server time minus device time, learned on every sync. Keeps a changed phone clock from moving the day. */
     @Volatile var skewMs: Long = 0L
 
-    fun now(): Long = System.currentTimeMillis() + skewMs
+    // Hooks so tests can drive the clock.
+    var deviceNow: () -> Long = { System.currentTimeMillis() }
+    var deviceOffsetMin: () -> Int = { java.util.TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000 }
+    var pins: PinStore? = null
+    private val ps: PinStore get() = pins ?: Store
+
+    fun now(): Long = deviceNow() + skewMs
 
     /** The timezone used for "today". It follows the phone only after the phone has kept it for a full day. */
-    fun tzOffsetMs(now: Long = now()): Int {
-        val pin = Store.tzPin
-        return if (pin == Store.NO_TZ) TimeZone.getDefault().getOffset(now) else pin * 60_000
+    fun tzOffsetMs(): Int {
+        val pin = ps.tzPin
+        return if (pin == NO_TZ) deviceOffsetMin() * 60_000 else pin * 60_000
     }
-    fun tzOffsetMin(now: Long = now()): Int = tzOffsetMs(now) / 60_000
-    fun localDay(now: Long = now()): Long = (now + tzOffsetMs(now)) / 86_400_000L
-    fun dayStart(now: Long = now()): Long = localDay(now) * 86_400_000L - tzOffsetMs(now)
+    fun tzOffsetMin(): Int = tzOffsetMs() / 60_000
+    fun localDay(now: Long = now()): Long = (now + tzOffsetMs()) / 86_400_000L
+    fun dayStart(now: Long = now()): Long = localDay(now) * 86_400_000L - tzOffsetMs()
+
+    fun pinNow() { ps.tzPin = deviceOffsetMin() }
 
     fun observeTz() {
-        if (Store.tzPin == Store.NO_TZ) return
-        val dev = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
+        if (ps.tzPin == NO_TZ) return
+        val dev = deviceOffsetMin()
         val t = now()
-        if (dev == Store.tzPin) { Store.tzCand = Store.NO_TZ; return }
-        if (Store.tzCand != dev) { Store.tzCand = dev; Store.tzCandSince = t; return }
-        if (t - Store.tzCandSince >= 86_400_000L) { Store.tzPin = dev; Store.tzCand = Store.NO_TZ }
+        if (dev == ps.tzPin) { ps.tzCand = NO_TZ; return }
+        if (ps.tzCand != dev) { ps.tzCand = dev; ps.tzCandSince = t; return }
+        if (t - ps.tzCandSince >= 86_400_000L) { ps.tzPin = dev; ps.tzCand = NO_TZ }
     }
 }
 
-object Store {
+object Store : PinStore {
     private lateinit var p: SharedPreferences
 
     fun init(c: Context) {
@@ -52,14 +68,14 @@ object Store {
         get() = p.getString("code", "") ?: ""
         set(v) = p.edit().putString("code", v).apply()
 
-    const val NO_TZ = Int.MIN_VALUE
-    var tzPin: Int
+    const val NO_TZ = Clock.NO_TZ
+    override var tzPin: Int
         get() = p.getInt("tz_pin", NO_TZ)
         set(v) = p.edit().putInt("tz_pin", v).apply()
-    var tzCand: Int
+    override var tzCand: Int
         get() = p.getInt("tz_cand", NO_TZ)
         set(v) = p.edit().putInt("tz_cand", v).apply()
-    var tzCandSince: Long
+    override var tzCandSince: Long
         get() = p.getLong("tz_cand_since", 0L)
         set(v) = p.edit().putLong("tz_cand_since", v).apply()
     var skewMs: Long

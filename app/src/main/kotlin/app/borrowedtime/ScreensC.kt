@@ -102,11 +102,14 @@ fun HomeScreen(
     onShare: () -> Unit,
     onDecide: (Ask, Boolean) -> Unit,
     onFix: () -> Unit,
+    scrollToEnd: Boolean = false,
 ) {
     val snap = ui.snapshot
     val now = snap?.now ?: (System.currentTimeMillis() / 1000)
+    val scroll = rememberScrollState()
+    androidx.compose.runtime.LaunchedEffect(scrollToEnd) { if (scrollToEnd) { kotlinx.coroutines.delay(600); scroll.scrollTo(scroll.maxValue) } }
     Column(
-        Modifier.fillMaxSize().background(C.Ink).systemBarsPadding().verticalScroll(rememberScrollState())
+        Modifier.fillMaxSize().background(C.Ink).systemBarsPadding().verticalScroll(scroll)
             .padding(horizontal = 24.dp, vertical = 12.dp),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

@@ -79,7 +79,7 @@ fun PauseScreen(ui: UiState, onHome: () -> Unit, onOpenApp: () -> Unit, demo: Bo
     val snap = ui.snapshot
     val pending = snap?.pendingMine
     Box(Modifier.fillMaxSize().background(C.Ink)) {
-        Mark(520.dp, C.Paper.copy(alpha = 0.03f), C.Sand.copy(alpha = 0.08f), Modifier.align(Alignment.TopStart).padding(top = 40.dp))
+        Mark(520.dp, C.Paper.copy(alpha = 0.03f), C.Sand.copy(alpha = 0.08f), Modifier.align(Alignment.TopStart).padding(top = 40.dp).fadeEdges())
         Column(
             Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 28.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
