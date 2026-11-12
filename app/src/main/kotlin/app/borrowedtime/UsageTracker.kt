@@ -56,6 +56,7 @@ class UsageTracker(private val ctx: Context) {
         when (type) {
             UsageEvents.Event.ACTIVITY_RESUMED -> {
                 if (seen.put("$ts|$type|$pkg|$cls", ts) != null) return
+                closeOthers(ts, pkg)
                 if (!openCls.add("$pkg/$cls")) return
                 val n = openCount[pkg] ?: 0
                 if (n == 0) openStart[pkg] = ts
@@ -80,6 +81,17 @@ class UsageTracker(private val ctx: Context) {
                 if (seen.put("$ts|$type|$pkg|$cls", ts) != null) return
                 closeAll(ts)
             }
+        }
+    }
+
+    /** A pause event can go missing (process death), so a newer app coming forward closes the rest. */
+    private fun closeOthers(ts: Long, keep: String) {
+        val stale = openStart.keys.filter { it != keep }
+        for (p in stale) {
+            val st = openStart.remove(p) ?: continue
+            if (ts > st) closedMs[p] = (closedMs[p] ?: 0L) + (ts - st)
+            openCount.remove(p)
+            openCls.removeAll { it.startsWith("$p/") }
         }
     }
 
