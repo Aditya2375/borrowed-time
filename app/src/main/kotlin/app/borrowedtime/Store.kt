@@ -6,8 +6,8 @@ import java.util.TimeZone
 
 interface PinStore {
     var tzPin: Int
-    override var tzCand: Int
-    override var tzCandSince: Long
+    var tzCand: Int
+    var tzCandSince: Long
 }
 
 object Clock {
