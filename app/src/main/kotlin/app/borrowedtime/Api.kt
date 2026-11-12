@@ -79,6 +79,8 @@ object Api {
         call("bt_decide", auth().put("p_request", id).put("p_approve", approve).put("p_minutes", minutes)),
     )
 
+    fun newCode(): Snapshot = Snapshot.parse(call("bt_new_code", auth()))
+
     fun leave() {
         call("bt_leave", auth())
     }

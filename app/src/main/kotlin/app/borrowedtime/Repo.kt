@@ -176,6 +176,19 @@ object Repo {
         }
     }
 
+    suspend fun newCode(): Result<Snapshot> = netLock.withLock {
+        withContext(Dispatchers.IO) {
+            try {
+                val s = Api.newCode()
+                Store.code = s.code
+                adopt(s); Store.snapshotJson = rawOf(s)
+                Result.success(s)
+            } catch (e: ApiError) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun leave(): Boolean = netLock.withLock {
         withContext(Dispatchers.IO) {
             try {

@@ -206,6 +206,16 @@ fun HomeScreen(
         } else {
             others.forEach { FriendRow(it, now) }
         }
+        snap?.left?.forEach { (n, at) ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Avatar(n, 42.dp)
+                Spacer(Modifier.width(14.dp))
+                Column {
+                    Text(n, style = T.Strong.copy(color = C.Muted))
+                    Text("Left the group ${ago(now, at)}", style = T.Small.copy(color = C.Ember))
+                }
+            }
+        }
         Spacer(Modifier.height(20.dp))
         if (snap != null) {
             Card(Modifier.clickable(onClick = onShare)) {
@@ -274,6 +284,7 @@ fun SettingsScreen(
     onLimits: () -> Unit,
     onPerms: () -> Unit,
     onLeave: () -> Unit,
+    onNewCode: () -> Unit,
     version: String,
 ) {
     var confirm by remember { mutableStateOf(false) }
@@ -300,7 +311,11 @@ fun SettingsScreen(
         Row2("Group", snap?.groupName ?: "", null)
         Row2("Your name", snap?.meName ?: Store.name, null)
         Row2("Version", version, null)
-        Spacer(Modifier.height(36.dp))
+        Spacer(Modifier.height(28.dp))
+        BtButton("New group code", onNewCode, Modifier.fillMaxWidth(), Btn.Ghost)
+        Spacer(Modifier.height(4.dp))
+        Text("Use it if the code got out. Current members stay in.", style = T.Small.copy(color = C.Faint), modifier = Modifier.padding(start = 8.dp, top = 6.dp))
+        Spacer(Modifier.height(28.dp))
         if (!confirm) {
             BtButton("Leave group", { confirm = true }, Modifier.fillMaxWidth(), Btn.Ghost)
         } else {

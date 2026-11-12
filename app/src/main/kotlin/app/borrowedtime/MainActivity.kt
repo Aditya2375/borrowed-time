@@ -167,6 +167,7 @@ private fun AppHost(resumeTick: Int) {
                         }
                     }
                 },
+                onNewCode = { scope.launch { Repo.newCode() } },
                 version = BuildConfig.VERSION_NAME,
             )
             else -> Box(Modifier.fillMaxSize()) {
@@ -217,7 +218,7 @@ private fun DemoHost(which: String) {
         "home_spent" -> Box(Modifier.fillMaxSize()) { HomeScreen(Demo.ui(true, asking = true), none, none, none, { _, _ -> }, none) }
         "block" -> PauseScreen(Demo.ui(true), none, none)
         "block_ask" -> PauseScreen(Demo.ui(true), none, none, demo = true)
-        "settings" -> SettingsScreen(Demo.ui(false), none, none, none, none, "1.0.0")
+        "settings" -> SettingsScreen(Demo.ui(false), none, none, none, none, none, "1.0.0")
         else -> WelcomeScreen(none, none)
     }
 }

@@ -44,6 +44,7 @@ data class Snapshot(
     val grantedToday: Int,
     val members: List<Member>,
     val asks: List<Ask>,
+    val left: List<Pair<String, Long>> = emptyList(),
 ) {
     val asksLeft: Int get() = (MAX_ASKS - asksToday).coerceAtLeast(0)
     val me: Member? get() = members.firstOrNull { it.id == meId }
@@ -81,6 +82,9 @@ data class Snapshot(
                         tz = m.getInt("tz"),
                     )
                 },
+                left = o.optJSONArray("left")?.let { a ->
+                    (0 until a.length()).map { a.getJSONObject(it).let { l -> l.getString("name") to l.getLong("at") } }
+                } ?: emptyList(),
                 asks = o.getJSONArray("requests").map { r ->
                     Ask(
                         id = r.getString("id"),
