@@ -5,10 +5,28 @@ import android.content.SharedPreferences
 import java.util.TimeZone
 
 object Clock {
-    fun tzOffsetMs(now: Long = System.currentTimeMillis()): Int = TimeZone.getDefault().getOffset(now)
-    fun tzOffsetMin(now: Long = System.currentTimeMillis()): Int = tzOffsetMs(now) / 60_000
-    fun localDay(now: Long = System.currentTimeMillis()): Long = (now + tzOffsetMs(now)) / 86_400_000L
-    fun dayStart(now: Long = System.currentTimeMillis()): Long = localDay(now) * 86_400_000L - tzOffsetMs(now)
+    /** Server time minus device time, learned on every sync. Keeps a changed phone clock from moving the day. */
+    @Volatile var skewMs: Long = 0L
+
+    fun now(): Long = System.currentTimeMillis() + skewMs
+
+    /** The timezone used for "today". It follows the phone only after the phone has kept it for a full day. */
+    fun tzOffsetMs(now: Long = now()): Int {
+        val pin = Store.tzPin
+        return if (pin == Store.NO_TZ) TimeZone.getDefault().getOffset(now) else pin * 60_000
+    }
+    fun tzOffsetMin(now: Long = now()): Int = tzOffsetMs(now) / 60_000
+    fun localDay(now: Long = now()): Long = (now + tzOffsetMs(now)) / 86_400_000L
+    fun dayStart(now: Long = now()): Long = localDay(now) * 86_400_000L - tzOffsetMs(now)
+
+    fun observeTz() {
+        if (Store.tzPin == Store.NO_TZ) return
+        val dev = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
+        val t = now()
+        if (dev == Store.tzPin) { Store.tzCand = Store.NO_TZ; return }
+        if (Store.tzCand != dev) { Store.tzCand = dev; Store.tzCandSince = t; return }
+        if (t - Store.tzCandSince >= 86_400_000L) { Store.tzPin = dev; Store.tzCand = Store.NO_TZ }
+    }
 }
 
 object Store {
@@ -33,6 +51,20 @@ object Store {
     var code: String
         get() = p.getString("code", "") ?: ""
         set(v) = p.edit().putString("code", v).apply()
+
+    const val NO_TZ = Int.MIN_VALUE
+    var tzPin: Int
+        get() = p.getInt("tz_pin", NO_TZ)
+        set(v) = p.edit().putInt("tz_pin", v).apply()
+    var tzCand: Int
+        get() = p.getInt("tz_cand", NO_TZ)
+        set(v) = p.edit().putInt("tz_cand", v).apply()
+    var tzCandSince: Long
+        get() = p.getLong("tz_cand_since", 0L)
+        set(v) = p.edit().putLong("tz_cand_since", v).apply()
+    var skewMs: Long
+        get() = p.getLong("skew", 0L)
+        set(v) = p.edit().putLong("skew", v).apply()
 
     val joined: Boolean get() = memberId != null && secret != null
 

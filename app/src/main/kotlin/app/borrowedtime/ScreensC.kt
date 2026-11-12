@@ -132,6 +132,12 @@ fun HomeScreen(
                 BtButton(if (ui.health == Health.NoApps) "Pick apps" else "Fix it", onFix, kind = Btn.Paper, height = 44.dp)
             }
         }
+        if (kotlin.math.abs(ui.skewMs) > 300_000L) {
+            Spacer(Modifier.height(12.dp))
+            Card(tint = C.EmberDim, border = C.Ember.copy(alpha = 0.3f)) {
+                Text("This phone's clock is off by ${minutesLabel((kotlin.math.abs(ui.skewMs) / 60_000L).toInt())}. Borrowed Time is counting your day by the group's clock instead.", style = T.Small.copy(color = C.Paper))
+            }
+        }
         Spacer(Modifier.height(36.dp))
         Reveal(0) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

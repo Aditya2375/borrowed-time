@@ -23,6 +23,7 @@ data class UiState(
     val health: Health = Health.Ok,
     val online: Boolean = true,
     val lastSync: Long = 0L,
+    val skewMs: Long = 0L,
 ) {
     val allowanceSec: Int get() = (limitMin + grantedMin) * 60
     val leftSec: Int get() = (allowanceSec - usedSec).coerceAtLeast(0)
@@ -40,6 +41,7 @@ object Repo {
         if (::app.isInitialized) return
         app = ctx.applicationContext
         Store.init(app)
+        Clock.skewMs = Store.skewMs
         tracker = UsageTracker(app)
         Store.snapshotJson?.let { raw ->
             runCatching { Snapshot.parse(raw) }.getOrNull()?.let { s ->
@@ -75,6 +77,7 @@ object Repo {
 
     /** Local, cheap, no network. Safe to call every second. */
     fun tick(): UiState {
+        Clock.observeTz()
         val today = Clock.localDay()
         Store.rollPending(today)
         val p = perms()
@@ -88,12 +91,15 @@ object Repo {
             foreground = if (p.usage) tracker.foreground() else null,
             perms = p,
             health = healthOf(p),
+            skewMs = Clock.skewMs,
         )
         _state.value = next
         return next
     }
 
     private fun adopt(s: Snapshot) {
+        val skew = s.now * 1000L - System.currentTimeMillis()
+        Clock.skewMs = skew; Store.skewMs = skew
         Store.snapshotDay = Clock.localDay()
         _state.value = _state.value.copy(snapshot = s, online = true, lastSync = System.currentTimeMillis())
         tick()
@@ -105,6 +111,7 @@ object Repo {
     }
 
     fun adoptSession(sess: Api.Session, name: String) {
+        if (Store.tzPin == Store.NO_TZ) Store.tzPin = java.util.TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
         Store.memberId = sess.memberId
         Store.secret = sess.secret
         Store.name = name

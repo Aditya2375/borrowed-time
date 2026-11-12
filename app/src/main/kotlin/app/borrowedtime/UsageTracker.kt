@@ -25,15 +25,16 @@ class UsageTracker(private val ctx: Context) {
 
     @Synchronized
     fun refresh(now: Long = System.currentTimeMillis()) {
-        val today = Clock.localDay(now)
+        val cnow = now + Clock.skewMs
+        val today = Clock.localDay(cnow)
         val from: Long
         if (today != day) {
             day = today
             closedMs.clear(); openCls.clear(); openCount.clear(); openStart.clear(); seen.clear()
             lastPkg = null
-            from = Clock.dayStart(now)
+            from = Clock.dayStart(cnow) - Clock.skewMs
         } else {
-            from = maxOf(cursor - 8_000L, Clock.dayStart(now))
+            from = maxOf(cursor - 8_000L, Clock.dayStart(cnow) - Clock.skewMs)
         }
         try {
             val events = usm.queryEvents(from, now)

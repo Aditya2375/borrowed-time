@@ -36,7 +36,7 @@ jobs:
           echo "BT_KS_PASS=${{ secrets.BT_KS_PASS }}" >> "$GITHUB_ENV"
           echo "BT_KEY_ALIAS=${{ secrets.BT_KEY_ALIAS }}" >> "$GITHUB_ENV"
       - name: Build
-        run: gradle --no-daemon :app:assembleDebug :app:assembleRelease
+        run: gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease
       - name: Collect
         run: |
           mkdir -p out
