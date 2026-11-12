@@ -48,4 +48,6 @@ gradle :app:assembleDebug
 
 Release builds read `BT_KEYSTORE`, `BT_KS_PASS`, `BT_KEY_ALIAS` and `BT_API_KEY` from the environment. CI does this from repository secrets.
 
+A step-by-step phone test is in [TESTING.md](TESTING.md).
+
 MIT licensed.

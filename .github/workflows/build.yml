@@ -42,6 +42,10 @@ jobs:
           mkdir -p out
           cp app/build/outputs/apk/debug/*.apk out/borrowed-time-debug.apk
           cp app/build/outputs/apk/release/*.apk out/borrowed-time.apk
+      - name: Signature
+        run: |
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs out/borrowed-time.apk | grep -E 'SHA-256|Verified'
+          sha256sum out/borrowed-time.apk
       - uses: actions/upload-artifact@v4
         with:
           name: apks
