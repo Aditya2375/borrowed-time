@@ -12,15 +12,15 @@ alter table bt.members add column if not exists left_at timestamptz;
 
 create or replace function bt.throttle(p_kind text, p_max int, p_window interval)
 returns void language plpgsql security definer set search_path = bt, public as $$
-declare ip text; n int;
+declare v_ip text; n int;
 begin
   begin
-    ip := coalesce(split_part((current_setting('request.headers', true)::json ->> 'x-forwarded-for'), ',', 1), 'unknown');
-  exception when others then ip := 'unknown'; end;
+    v_ip := coalesce(split_part((current_setting('request.headers', true)::json ->> 'x-forwarded-for'), ',', 1), 'unknown');
+  exception when others then v_ip := 'unknown'; end;
   delete from bt.attempts where at < now() - interval '1 day';
-  select count(*) into n from bt.attempts where bt.attempts.ip = throttle.ip and kind = p_kind and at > now() - p_window;
+  select count(*) into n from bt.attempts a where a.ip = v_ip and a.kind = p_kind and a.at > now() - p_window;
   if n >= p_max then raise exception 'too_many'; end if;
-  insert into bt.attempts(ip, kind) values (ip, p_kind);
+  insert into bt.attempts(ip, kind) values (v_ip, p_kind);
 end $$;
 revoke all on function bt.throttle(text, int, interval) from public, anon, authenticated;
 
@@ -61,7 +61,7 @@ begin
   perform bt.throttle('join', 12, interval '10 minutes');
   if char_length(trim(coalesce(p_name, ''))) not between 1 and 24 then raise exception 'bad_name'; end if;
   select * into g from bt.groups where code = upper(trim(coalesce(p_code, '')));
-  if not found then raise exception 'no_such_group'; end if;
+  if not found then return json_build_object('error', 'no_such_group'); end if; -- returned, not raised, so the throttle count commits
   if (select count(*) from bt.members where group_id = g.id and active) >= 6 then raise exception 'group_full'; end if;
   if exists (select 1 from bt.members where group_id = g.id and active and lower(name) = lower(trim(p_name))) then
     raise exception 'name_taken';

@@ -54,6 +54,7 @@ object Api {
             "bt_join_group",
             JSONObject().put("p_code", code).put("p_name", name).put("p_tz", Clock.tzOffsetMin()),
         )
+        if (r.has("error")) throw ApiError(r.getString("error"))
         return Session(r.getString("member_id"), r.getString("secret"), Snapshot.parse(r.getJSONObject("snapshot")))
     }
 
