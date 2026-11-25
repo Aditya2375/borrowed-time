@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Borrowed Time: a daily app limit your friends enforce</title>
+<meta name="description" content="Set a daily limit on the apps that eat your day. When it runs out, the only way back in is to ask your friends. Free, open source, Android.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="#top" aria-label="Borrowed Time, top"><svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true"><path d="M2 1h14M2 21h14M3 1c0 6 5 7 6 10-1 3-6 4-6 10M15 1c0 6-5 7-6 10 1 3 6 4 6 10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Borrowed Time</span></a>
+<nav><a href="#try">Try the rules</a><a href="#honest">Honest limits</a><a href="https://github.com/Aditya2375/borrowed-time">Source</a></nav></header>
+<main id="top">
+<section class="hero">
+<p class="eyebrow">For groups of 3 to 6 friends</p>
+<h1>Your time<br>is <em>borrowed.</em></h1>
+<p class="lede">Pick the apps that eat your day and a daily total. When it is gone, those apps are paused. The only way back in is to ask your friends, and one of them has to say yes.</p>
+<p class="cta"><a class="btn primary" href="https://github.com/Aditya2375/borrowed-time/releases/latest">Download for Android</a><a class="btn" href="#try">Try the rules here</a></p>
+<p class="fine">Free. No sign-up. Android 8.0 or newer. MIT licensed.</p>
+<ul class="shots" aria-label="App screenshots from an emulator, with sample names">
+<li><img src="shots/welcome.jpg" width="270" height="600" alt="Welcome screen: Your time is borrowed, with Start a group and Join with a code buttons"><span>Start or join</span></li>
+<li><img src="shots/pick.jpg" width="270" height="600" alt="Choose apps and a daily total of 45 minutes"><span>Pick apps and a total</span></li>
+<li><img src="shots/home.jpg" width="270" height="600" alt="Home with 26 minutes left, a friend asking for 10 more minutes, and the group's progress"><span>Friends see each other</span></li>
+<li><img src="shots/block_ask.jpg" width="270" height="600" alt="Pause screen with a sheet to ask the group for 5, 10, 15 or 30 minutes"><span>Ask to get back in</span></li>
+</ul>
+</section>
+
+<section class="rules">
+<h2>Four rules. No settings to argue with.</h2>
+<ol>
+<li><b>One shared daily total.</b> Tick Instagram, YouTube, Reddit, anything. One number covers them all.</li>
+<li><b>When it is spent, it is spent.</b> A pause screen covers the apps for the rest of the day.</li>
+<li><b>Ask, up to three times a day.</b> Choose 5, 10, 15 or 30 minutes and say why.</li>
+<li><b>One yes is enough.</b> Anyone else in the group can give it. Nobody can approve their own ask. When the extra minutes run out, the apps pause again.</li>
+</ol>
+</section>
+
+<section class="try" id="try">
+<h2>Try the rules</h2>
+<p class="sub">A simulation of the app's logic, not the app. Nothing here is sent anywhere.</p>
+<div class="sim" id="sim">
+<div class="phone">
+<p class="label">Left today</p>
+<p class="big"><span id="left">20</span><small> min</small></p>
+<div class="bar" role="progressbar" aria-label="Time used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barwrap"><i id="bar"></i></div>
+<p class="meta" id="meta">0 of 20 min used</p>
+<div class="row">
+<button class="btn" id="use5" type="button">Scroll for 5 min</button>
+</div>
+<div class="pause" id="pause" hidden>
+<p class="serif">You've spent <em>today's time.</em></p>
+<p class="meta">The only way back in is to ask a friend.</p>
+<button class="btn primary" id="ask" type="button">Ask my friends for 10 min</button>
+<p class="meta" id="asks">3 of 3 asks left today</p>
+</div>
+</div>
+<div class="phone friend">
+<p class="label">Your friend, Sana</p>
+<div class="req" id="req" hidden>
+<p><b>You are asking</b> <span class="gold">10 min more</span></p>
+<p class="quote">"Need to finish the reel I started"</p>
+<div class="row"><button class="btn primary" id="give" type="button">Give 10</button><button class="btn" id="no" type="button">Not now</button></div>
+</div>
+<p class="meta" id="idle">No asks right now.</p>
+</div>
+</div>
+<p class="log" id="log" role="status" aria-live="polite"></p>
+<p><button class="btn" id="reset" type="button">Start a new day</button></p>
+</section>
+
+<section class="how">
+<h2>How it works</h2>
+<p>The app reads foreground time from Android's usage log, the same source Digital Wellbeing uses. It cannot see what is inside Instagram or YouTube. A small foreground service watches which app is in front and shows the pause screen when the total is spent.</p>
+<p>Groups sync through a Supabase Postgres database. Every action goes through a few functions that check a per-device secret. The tables are not exposed. The group sees your name, your limit, your time used today, how many apps you limit, whether the guard is running and when your phone last checked in. Nothing else leaves the phone.</p>
+<p>Lowering your limit applies at once. Raising it, or dropping an app, starts at the next midnight, so you cannot dodge the guard mid-day.</p>
+</section>
+
+<section class="honest" id="honest">
+<h2>Honest limits</h2>
+<p>This is a trust-based app for friends. It is not a lock.</p>
+<ul>
+<li>You can uninstall it or force-stop it. Your friends see "Guard silent" after ten minutes and "Left the group" for 48 hours.</li>
+<li>The pause screen is an overlay, not a system lock.</li>
+<li>Asks reach a friend on their next check-in: every 15 seconds with the screen on, every five minutes with it off. There is no push service, so a sleeping phone can be slower.</li>
+<li>Someone with two phones can pose as two members.</li>
+<li>Some phone makers kill background apps. Turn off battery optimisation for Borrowed Time if the guard stops.</li>
+<li>It has been tested on an emulator and by unit tests. It has not yet had a long run on real phones, and newer Android versions are only checked on an emulator. <a href="https://github.com/Aditya2375/borrowed-time/blob/main/TESTING.md">The phone test checklist</a> is in the repo.</li>
+</ul>
+</section>
+</main>
+<footer><p>Borrowed Time is open source under the MIT licence. <a href="https://github.com/Aditya2375/borrowed-time">github.com/Aditya2375/borrowed-time</a></p><p class="fine">Fonts: Instrument Serif and Inter, both under the SIL Open Font Licence.</p></footer>
+<script src="sim.js"></script>
+</body>
+</html>
