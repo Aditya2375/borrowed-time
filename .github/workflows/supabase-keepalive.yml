@@ -2,7 +2,7 @@ name: Supabase keep-alive
 
 on:
   schedule:
-    - cron: '23 4 * * 1,4'
+    - cron: '23 4 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Borrowed Time backend
-        run: >
+        run: >-
           curl -s -X POST
           -H 'apikey: sb_publishable_vND7PMrQ4_Gcw-6TPZpRDg_czb2qVfF'
           -H 'Authorization: Bearer sb_publishable_vND7PMrQ4_Gcw-6TPZpRDg_czb2qVfF'
